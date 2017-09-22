@@ -1,0 +1,62 @@
+#########################################################################################
+# ODK hardcopy in PDF v 1.0
+#########################################################################################
+#
+# Step one of this script is a call to ODK briefcase via the command line, which pulls all
+# records and media.
+#
+# Step two is to output individual records to a temp file, then bind their data with
+# any images to make a pdf document.
+#
+# This work is licensed under Creative Commons Attribution-ShareAlike 3.0 Unported License
+# http://creativecommons.org/licenses/by-sa/3.0/"
+#########################################################################################
+# Requirements
+#
+#needs latex and pandoc (external installations, use homebrew)
+library(knitr)
+library(readr)
+library(dplyr)
+library(anytime)
+#
+#########################################################################################
+# call to ODK briefcase
+# use full path including first subdirectory
+# ie. https://projectx.odk.lshtm.ac.uk/projectx/
+# any passwords with special characters will need escape characters
+# i.e. password doggy!prunes12 needs to be specified as doggy\\!prunes12
+# obviously shouldn't hardcode passwords. Better to call from the console using a readline() command but I am lazy
+# Also need to specify the targets for input and output. Here TMIH_example
+# I also renamed the jar file for ODK briefcase because I hate whitespace
+
+command<- paste('java -jar ODK_Briefcase.jar -url YOUR_URL_HERE -p YOUR_PASSWORD_HERE -u admin -id YOUR_FORM_NAME_HERE -ed ./FOLDER_TO_EXPORT_IT_IN_ON_YOUR_PC -sd ./STORAGE_DIRECTORY -f FILE_NAME_OF_DOWNLOADED_CSV.csv')
+system(command)
+
+# pull in the csv data
+df<-read.csv("TMIH_Example/TMIH_Example.csv",header = T)
+
+# enter loop for each row of the csv file
+for(i in 1:dim(df)[1])
+{
+  #send a file for the current record to tmp
+  write.table(df[i,],file = "tmp.txt",quote = F,sep = "\t",col.names = T,row.names = F)
+  #convert datetimes so that reports sort appropriately by date of submission
+
+  df$SubmissionDate<-anytime(df$SubmissionDate)
+
+  #run RMD script to create report in pdf, pulling in any jpgs
+  rmarkdown::render(input = "pdfmaker.Rmd",
+                    output_format = "pdf_document",
+                    output_file = gsub(pattern = " |:",replacement = "_",x = paste(df$SubmissionDate[i], "_YOUR_FORM_NAME_HERE.pdf", sep='')),
+                    output_dir = "reports")
+
+}
+
+#This work is licensed under Creative Commons Attribution-ShareAlike 3.0 Unported License
+#http://creativecommons.org/licenses/by-sa/3.0/"
+
+#Nuff respect to VP Nagraj [twitter @vpnagraj] from whose scripts I reused some of the control structure for calling RMD from another R script
+#See http://nagraj.net/notes/multiple-rmarkdown-reports/
+
+
+

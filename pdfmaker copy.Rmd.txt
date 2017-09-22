@@ -1,0 +1,40 @@
+```{r header, echo=FALSE}
+a<-read.table("tmp.txt",header = T,sep="\t",stringsAsFactors = F)
+pres_title <- paste("Instance | ", a$SubmissionDate)
+pres_author <- ""
+pres_date <- paste("Report generated on ",Sys.Date())
+```
+---
+title: `r pres_title`
+author: `r pres_author`
+date: `r pres_date`
+output: pdf_document
+classoption: landscape
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, printoutdata, echo=FALSE}
+
+for(i in 1:dim(a)[2])
+{
+message(names(a)[i])
+message(paste("\t",a[[i]]))  
+}
+
+```
+
+```{r , images, results='asis', echo=FALSE}
+jpgs<-a[1,grep("jpeg|jpg",x = a[1,])]
+if(length(jpgs>0))
+{
+for(i in 1:length(jpgs))
+{jpgs[i]<-paste(getwd(),"/TMIH_Example/",jpgs[i],sep="")}
+res <- paste0("![](", jpgs, ")<br><br>")
+cat(res)
+}
+```
+
+
