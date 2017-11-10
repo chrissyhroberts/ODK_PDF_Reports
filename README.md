@@ -1,10 +1,16 @@
 # ODK_PDF_Reports
 
-Several of my users have asked me if there is a simple way to convert individual records from ODK in to PDF files. This is pretty useful if you are running ODK for scientific research studies where ethics boards insist that data collection sites retain hard copies of data forms.
+This is a proof of concept example of how a simple R script can be used to do automate some archiving and reporting capabilities when using Open Data Kit as a tool for electronic data collection. 
 
-I’ve written these scripts for my own use but thought that they might be useful to some others who have similar need. They are a pair of R scripts, one in R markdown. The first will download everything via java ODK briefcase tool and create a csv file. Then they iteratively work through the csv file, sending calls to the markdown script and telling it to make a report in pdf, binding the data together with any images captured in the media folder.
+The following scripts are bare bones to demonstrate the core functionality of a master control script which pipes to an R markdown document in order to carry out any necessary tasks of data handling, analysis and report/chart generation. 
 
-I’m no hardcore programmer, so these scripts are rough around the edges. Feel free to mod, improve and repost.
+It is also useful for creating an archive of PDF files that can replace paper copies of forms in institutional repositories. Often ethics boards will request copies to be deposited locally and these files may be valuable in that respect. 
+
+
+The first script will download everything from an ODK aggregate server via the java ODK briefcase tool. It will then create a csv file in standard 'tidy' format. Then the script will iteratively work through the csv file, sending calls to the markdown script and telling it to make a report in pdf, binding the data together with any images captured in the media folder. This being markdown, it could also output HTML (i.e. web pages), Slides, Word documents and so on. 
+
+These scripts are rough around the edges and intentionally left at beta to show only the minimum necessary steps to achieve the basic function.
 
 You’ll need to install latex and pandoc. I used homebrew, but many options for this.
+Also need ODK briefcase java app. 
 
